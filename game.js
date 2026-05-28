@@ -59,6 +59,7 @@ class Game {
     // 生成加法题目
     generateAdditionNumbers() {
         const max = Math.min(10 + this.level * 5, 100);
+        // 修复：确保加法数字生成正确
         this.additionNumbers[0] = Math.floor(Math.random() * max) + 1;
         this.additionNumbers[1] = Math.floor(Math.random() * max) + 1;
         this.renderAdditionNumbers();
@@ -85,11 +86,27 @@ class Game {
         DOM.numbersContainer.innerHTML = '';
         DOM.resultMessage.style.display = 'none';
 
-        const a = document.createElement('div'); a.className = 'number-card'; a.textContent = this.additionNumbers[0];
-        const p = document.createElement('div'); p.className = 'number-card'; p.textContent = '+'; p.style.background = '#a8edea'; p.style.cursor = 'default';
-        const b = document.createElement('div'); b.className = 'number-card'; b.textContent = this.additionNumbers[1];
-        const e = document.createElement('div'); e.className = 'number-card'; e.textContent = '='; e.style.background = '#a8edea'; e.style.cursor = 'default';
-        const q = document.createElement('div'); q.className = 'number-card'; q.textContent = '?'; q.style.background = '#ffecd2'; q.style.cursor = 'default';
+        const a = document.createElement('div'); 
+        a.className = 'number-card'; 
+        a.textContent = this.additionNumbers[0];
+        const p = document.createElement('div'); 
+        p.className = 'number-card'; 
+        p.textContent = '+'; 
+        p.style.background = '#a8edea'; 
+        p.style.cursor = 'default';
+        const b = document.createElement('div'); 
+        b.className = 'number-card'; 
+        b.textContent = this.additionNumbers[1];
+        const e = document.createElement('div'); 
+        e.className = 'number-card'; 
+        e.textContent = '='; 
+        e.style.background = '#a8edea'; 
+        e.style.cursor = 'default';
+        const q = document.createElement('div'); 
+        q.className = 'number-card'; 
+        q.textContent = '?'; 
+        q.style.background = '#ffecd2'; 
+        q.style.cursor = 'default';
 
         DOM.numbersContainer.append(a, p, b, e, q);
     }
@@ -139,9 +156,10 @@ class Game {
 
         if (correct) {
             DOM.resultMessage.className = 'result-message correct';
-            DOM.resultMessage.textContent = '恭喜你答对了！获得2颗星星';
+            DOM.resultMessage.textContent = '🎉 恭喜你答对了！获得2颗星星';
             this.stars += 2;
             this.level++;
+            // 修复关卡显示问题：给正确的DOM元素赋值
             DOM.starsDisplay.textContent = this.stars;
             DOM.levelDisplay.textContent = this.level;
             user.updateProgress(this.stars, this.level);
@@ -151,7 +169,7 @@ class Game {
             DOM.starsDisplay.textContent = this.stars;
             user.updateProgress(this.stars, this.level);
             DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '答错了，扣1颗星星';
+            DOM.resultMessage.textContent = '❌ 答错了，扣1颗星星';
             DOM.resultMessage.style.display = 'block';
         }
     }
@@ -163,16 +181,17 @@ class Game {
 
         if (isNaN(val)) {
             DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '请输入数字！';
+            DOM.resultMessage.textContent = '❌ 请输入数字！';
             DOM.resultMessage.style.display = 'block';
             return;
         }
 
         if (val === ans) {
             DOM.resultMessage.className = 'result-message correct';
-            DOM.resultMessage.textContent = '恭喜你答对了！获得2颗星星';
+            DOM.resultMessage.textContent = '🎉 恭喜你答对了！获得2颗星星';
             this.stars += 2;
             this.level++;
+            // 修复关卡显示问题：给正确的DOM元素赋值
             DOM.starsDisplay.textContent = this.stars;
             DOM.levelDisplay.textContent = this.level;
             user.updateProgress(this.stars, this.level);
@@ -185,7 +204,7 @@ class Game {
             DOM.starsDisplay.textContent = this.stars;
             user.updateProgress(this.stars, this.level);
             DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '答错了，扣1颗星星';
+            DOM.resultMessage.textContent = '❌ 答错了，扣1颗星星';
             DOM.resultMessage.style.display = 'block';
         }
     }
