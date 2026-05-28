@@ -1,208 +1,172 @@
-// 游戏核心
 class Game {
     constructor() {
-        this.currentGameLevel = 1;
-        this.currentNumbers = [];
-        this.selectedNumbers = [];
-        this.additionNumbers = [0, 0];
-        this.stars = 0;
-        this.level = 1;
+        this.currentLevel = 1;
+        this.numbers = [];
+        this.userAnswer = [];
+        this.stars = parseInt(localStorage.getItem('stars')) || 0;
+        this.init();
     }
 
-    // 初始化游戏
-    init(gameLevel) {
-        this.currentGameLevel = gameLevel;
-        const userInfo = user.getInfo();
-        this.stars = userInfo.stars;
-        this.level = userInfo.level;
+    init() {
+        this.setupEventListeners();
+        this.updateStarsDisplay();
+    }
 
-        if (gameLevel === 1) {
-            this.initSortGame();
-        } else if (gameLevel === 2) {
-            this.initAdditionGame();
+    startLevel(level) {
+        this.currentLevel = level;
+        this.userAnswer = [];
+        this.numbers = [];
+        document.getElementById('level').textContent = level;
+        document.getElementById('resultMessage').textContent = '';
+        document.getElementById('resultMessage').className = 'result-message';
+        document.getElementById('userAnswer').innerHTML = '';
+        
+        if (level === 1) {
+            this.setupSortingGame();
+        } else if (level === 2) {
+            this.setupAdditionGame();
         }
     }
 
-    // 初始化排序游戏
-    initSortGame() {
-        DOM.gameTitle.textContent = '第一关：数字排序';
-        DOM.gameInstruction.textContent = '把下面的数字从小到大排列';
-        DOM.answerContainer.style.display = 'block';
-        DOM.additionInputContainer.style.display = 'none';
-        this.generateSortNumbers();
-    }
-
-    // 初始化加法游戏
-    initAdditionGame() {
-        DOM.gameTitle.textContent = '第二关：数字加法';
-        DOM.gameInstruction.textContent = '计算两个数字的和';
-        DOM.answerContainer.style.display = 'none';
-        DOM.additionInputContainer.style.display = 'block';
-        DOM.additionAnswer.value = '';
-        this.generateAdditionNumbers();
-    }
-
-    // 生成排序题目
-    generateSortNumbers() {
-        const count = Math.min(CONFIG.MIN_NUMBERS_COUNT + this.level - 1, CONFIG.MAX_NUMBERS_COUNT);
-        this.currentNumbers = [];
-
-        while (this.currentNumbers.length < count) {
-            const num = Math.floor(Math.random() * CONFIG.MAX_NUMBER) + 1;
-            if (!this.currentNumbers.includes(num)) {
-                this.currentNumbers.push(num);
+    setupSortingGame() {
+        document.getElementById('gameTitle').textContent = '第一关：数字排序';
+        document.getElementById('gameInstruction').textContent = '把下面的数字从小到大排列：';
+        document.getElementById('numbersContainer').style.display = 'flex';
+        document.getElementById('answerContainer').style.display = 'block';
+        document.getElementById('additionInputContainer').style.display = 'none';
+        
+        // 生成4个1-20的随机数，确保不重复
+        while (this.numbers.length < 4) {
+            const num = Math.floor(Math.random()*20)+1;
+            if (!this.numbers.includes(num)) {
+                this.numbers.push(num);
             }
         }
-        this.renderSortNumbers();
-    }
-
-    // 生成加法题目
-    generateAdditionNumbers() {
-        const max = Math.min(10 + this.level * 5, 100);
-        this.additionNumbers[0] = Math.floor(Math.random() * max) + 1;
-        this.additionNumbers[1] = Math.floor(Math.random() * max) + 1;
-        this.renderAdditionNumbers();
-    }
-
-    // 渲染排序题目
-    renderSortNumbers() {
-        DOM.numbersContainer.innerHTML = '';
-        DOM.userAnswer.innerHTML = '';
-        this.selectedNumbers = [];
-        DOM.resultMessage.style.display = 'none';
-
-        this.currentNumbers.forEach(num => {
-            const card = document.createElement('div');
-            card.className = 'number-card';
-            card.textContent = num;
-            card.onclick = () => this.selectNumber(num, card);
-            DOM.numbersContainer.appendChild(card);
+        
+        const numbersContainer = document.getElementById('numbersContainer');
+        numbersContainer.innerHTML = '';
+        
+        // 打乱数字顺序并创建按钮
+        const shuffledNumbers = [...this.numbers].sort(() => Math.random()-0.5);
+        shuffledNumbers.forEach(num => {
+            const numberBtn = document.createElement('button');
+            numberBtn.className = 'number-btn';
+            numberBtn.textContent = num;
+            numberBtn.dataset.value = num;
+            numberBtn.addEventListener('click', () => this.selectNumber(num, numberBtn));
+            numbersContainer.appendChild(numberBtn);
         });
     }
 
-    // 渲染加法题目
-    renderAdditionNumbers() {
-        DOM.numbersContainer.innerHTML = '';
-        DOM.resultMessage.style.display = 'none';
-
-        const a = document.createElement('div'); a.className = 'number-card'; a.textContent = this.additionNumbers[0];
-        const p = document.createElement('div'); p.className = 'number-card'; p.textContent = '+'; p.style.background = '#a8edea'; p.style.cursor = 'default';
-        const b = document.createElement('div'); b.className = 'number-card'; b.textContent = this.additionNumbers[1];
-        const e = document.createElement('div'); e.className = 'number-card'; e.textContent = '='; e.style.background = '#a8edea'; e.style.cursor = 'default';
-        const q = document.createElement('div'); q.className = 'number-card'; q.textContent = '?'; q.style.background = '#ffecd2'; q.style.cursor = 'default';
-
-        DOM.numbersContainer.append(a, p, b, e, q);
+    setupAdditionGame() {
+        document.getElementById('gameTitle').textContent = '第二关：数字加法';
+        document.getElementById('gameInstruction').textContent = '计算下面两个数字的和：';
+        document.getElementById('numbersContainer').style.display = 'flex';
+        document.getElementById('answerContainer').style.display = 'none';
+        document.getElementById('additionInputContainer').style.display = 'block';
+        
+        // 生成两个10-50的随机数
+        const num1 = Math.floor(Math.random()*41)+10;
+        const num2 = Math.floor(Math.random()*41)+10;
+        this.numbers = [num1, num2];
+        
+        const numbersContainer = document.getElementById('numbersContainer');
+        numbersContainer.innerHTML = '';
+        
+        // 显示两个数字
+        const num1Btn = document.createElement('div');
+        num1Btn.className = 'addition-number';
+        num1Btn.textContent = num1;
+        numbersContainer.appendChild(num1Btn);
+        
+        const plusSign = document.createElement('div');
+        plusSign.className = 'addition-operator';
+        plusSign.textContent = '+';
+        numbersContainer.appendChild(plusSign);
+        
+        const num2Btn = document.createElement('div');
+        num2Btn.className = 'addition-number';
+        num2Btn.textContent = num2;
+        numbersContainer.appendChild(num2Btn);
+        
+        const equalSign = document.createElement('div');
+        equalSign.className = 'addition-operator';
+        equalSign.textContent = '=';
+        numbersContainer.appendChild(equalSign);
+        
+        // 清空输入框
+        document.getElementById('additionAnswer').value = '';
     }
 
-    // 选择数字
-    selectNumber(num, card) {
-        if (card.classList.contains('selected')) {
-            card.classList.remove('selected');
-            this.selectedNumbers = this.selectedNumbers.filter(x => x !== num);
-        } else {
-            card.classList.add('selected');
-            this.selectedNumbers.push(num);
-        }
-        this.updateUserAnswer();
+    selectNumber(num, button) {
+        // 只允许选择4个数字
+        if (this.userAnswer.length >= 4) return;
+        
+        // 添加到用户答案
+        this.userAnswer.push(num);
+        button.disabled = true;
+        button.classList.add('selected');
+        
+        // 更新答案显示
+        const userAnswerContainer = document.getElementById('userAnswer');
+        const answerItem = document.createElement('div');
+        answerItem.className = 'answer-item';
+        answerItem.textContent = num;
+        userAnswerContainer.appendChild(answerItem);
     }
 
-    // 更新答案显示
-    updateUserAnswer() {
-        DOM.userAnswer.innerHTML = '';
-        this.selectedNumbers.forEach(num => {
-            const span = document.createElement('span');
-            span.className = 'number-card';
-            span.textContent = num;
-            DOM.userAnswer.appendChild(span);
-        });
-    }
-
-    // 检查答案
     checkAnswer() {
-        if (this.currentGameLevel === 1) {
-            this.checkSortAnswer();
-        } else {
-            this.checkAdditionAnswer();
+        let isCorrect = false;
+        const resultMessage = document.getElementById('resultMessage');
+        
+        if (this.currentLevel === 1) {
+            // 检查排序是否正确
+            const sortedNumbers = [...this.numbers].sort((a, b) => a - b);
+            isCorrect = JSON.stringify(this.userAnswer) === JSON.stringify(sortedNumbers);
+        } else if (this.currentLevel === 2) {
+            // 检查加法答案
+            const userAnswer = parseInt(document.getElementById('additionAnswer').value);
+            const correctAnswer = this.numbers[0] + this.numbers[1];
+            isCorrect = userAnswer === correctAnswer;
         }
-    }
-
-    // 检查排序答案
-    checkSortAnswer() {
-        if (this.selectedNumbers.length !== this.currentNumbers.length) {
-            DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '请选择所有数字！';
-            DOM.resultMessage.style.display = 'block';
-            return;
-        }
-
-        const correct = JSON.stringify(this.selectedNumbers) === JSON.stringify([...this.currentNumbers].sort((a, b) => a - b));
-
-        if (correct) {
-            DOM.resultMessage.className = 'result-message correct';
-            DOM.resultMessage.textContent = '恭喜你答对了！获得2颗星星';
+        
+        if (isCorrect) {
+            resultMessage.textContent = '🎉 恭喜你！答对了！获得2颗星星！';
+            resultMessage.className = 'result-message correct';
             this.stars += 2;
-            this.level++;
-            DOM.starsDisplay.textContent = this.stars;
-            DOM.levelDisplay.textContent = this.level;
-            user.updateProgress(this.stars, this.level);
-            setTimeout(() => this.generateSortNumbers(), 2000);
+            this.updateStarsDisplay();
+            localStorage.setItem('stars', this.stars);
+            
+            // 显示下一关按钮
+            if (this.currentLevel < 2) {
+                setTimeout(() => {
+                    if (confirm('太棒了！是否进入下一关？')) {
+                        this.startLevel(this.currentLevel + 1);
+                    }
+                }, 1000);
+            }
         } else {
-            this.stars = Math.max(0, this.stars - 1);
-            DOM.starsDisplay.textContent = this.stars;
-            user.updateProgress(this.stars, this.level);
-            DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '答错了，扣1颗星星';
-            DOM.resultMessage.style.display = 'block';
+            resultMessage.textContent = '❌ 答案不对哦，再试一次吧！';
+            resultMessage.className = 'result-message incorrect';
         }
     }
 
-    // 检查加法答案
-    checkAdditionAnswer() {
-        const val = parseInt(DOM.additionAnswer.value);
-        const ans = this.additionNumbers[0] + this.additionNumbers[1];
-
-        if (isNaN(val)) {
-            DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '请输入数字！';
-            DOM.resultMessage.style.display = 'block';
-            return;
-        }
-
-        if (val === ans) {
-            DOM.resultMessage.className = 'result-message correct';
-            DOM.resultMessage.textContent = '恭喜你答对了！获得2颗星星';
-            this.stars += 2;
-            this.level++;
-            DOM.starsDisplay.textContent = this.stars;
-            DOM.levelDisplay.textContent = this.level;
-            user.updateProgress(this.stars, this.level);
-            setTimeout(() => {
-                this.generateAdditionNumbers();
-                DOM.additionAnswer.value = '';
-            }, 2000);
-        } else {
-            this.stars = Math.max(0, this.stars - 1);
-            DOM.starsDisplay.textContent = this.stars;
-            user.updateProgress(this.stars, this.level);
-            DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '答错了，扣1颗星星';
-            DOM.resultMessage.style.display = 'block';
-        }
+    resetGame() {
+        this.startLevel(this.currentLevel);
     }
 
-    // 重置到第一关
-    resetLevel() {
-        this.level = 1;
-        user.updateProgress(this.stars, this.level);
-        DOM.levelDisplay.textContent = 1;
+    updateStarsDisplay() {
+        document.getElementById('stars').textContent = this.stars;
+        document.getElementById('totalStars').textContent = this.stars;
+    }
 
-        if (this.currentGameLevel === 1) {
-            this.generateSortNumbers();
-        } else {
-            this.generateAdditionNumbers();
-            DOM.additionAnswer.value = '';
-        }
+    setupEventListeners() {
+        document.getElementById('submitBtn').addEventListener('click', () => this.checkAnswer());
+        document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
     }
 }
 
-const game = new Game();
+// 确保DOM加载完成后再初始化
+document.addEventListener('DOMContentLoaded', () => {
+    window.game = new Game();
+});
