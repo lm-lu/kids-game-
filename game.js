@@ -122,7 +122,7 @@ class Game {
         const correct = JSON.stringify(this.selectedNumbers) === JSON.stringify([...this.currentNumbers].sort((a, b) => a - b));
         if (correct) {
             DOM.resultMessage.className = 'result-message correct';
-            DOM.resultMessage.textContent = '🎉 恭喜你！答对了！获得2颗星星';
+            DOM.resultMessage.textContent = '🎉 恭喜你！答对了！';
             DOM.resultMessage.style.display = 'block';
 
             this.stars += 2;
@@ -138,7 +138,7 @@ class Game {
             user.updateProgress(this.stars, this.level);
 
             DOM.resultMessage.className = 'result-message incorrect';
-            DOM.resultMessage.textContent = '❌ 答错了，再试一次吧！扣1颗星星';
+            DOM.resultMessage.textContent = '❌ 答错了，再试一次吧！';
             DOM.resultMessage.style.display = 'block';
         }
     }
