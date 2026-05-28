@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>算法提升小乐园</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="welcomePage" class="page active">
+        <div class="container">
+            <h1 class="title">🧮 小天才训练营 🧮</h1>
+            <p class="subtitle">欢迎来到神奇的算法世界！</p>
+            <div class="mascot">🐱</div>
+            <button id="startBtn" class="btn primary-btn">开始冒险</button>
+        </div>
+    </div>
+
+    <div id="registerPage" class="page">
+        <div class="container">
+            <h1 class="title">📝 小探险家注册</h1>
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="studentName">你的姓名：</label>
+                    <input type="text" id="studentName" placeholder="请输入你的名字" required>
+                </div>
+                <div class="form-group">
+                    <label for="schoolName">所在学校：</label>
+                    <input type="text" id="schoolName" placeholder="请输入你的学校" required>
+                </div>
+                <div class="form-group">
+                    <label for="className">班级：</label>
+                    <input type="text" id="className" placeholder="例如：三年级二班" required>
+                </div>
+                <div id="errorMessage" class="error-message"></div>
+                <div class="button-group">
+                    <button type="button" id="backBtn" class="btn secondary-btn">返回</button>
+                    <button type="submit" class="btn primary-btn">完成注册</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="levelSelectPage" class="page">
+        <div class="container">
+            <h1 class="title">🌸 选择关卡</h1>
+            <div class="user-stars">
+                <span>⭐ 我的星星: <span id="totalStars">0</span></span>
+            </div>
+            <div class="level-buttons">
+                <button class="btn level-btn primary-btn" data-level="1">第一关：数字排序</button>
+                <button class="btn level-btn primary-btn" data-level="2">第二关：数字加法</button>
+            </div>
+
+            <div class="donate-section">
+                <button id="donateBtn" class="btn donate-btn">❤️ 家长打赏</button>
+            </div>
+
+            <div class="exchange-section">
+                <h3>🎁 星星兑换</h3>
+                <div class="exchange-items">
+                    <div class="exchange-item">
+                        <span>🏅 小勇士徽章</span>
+                        <button class="btn exchange-btn" data-cost="10">10颗星星</button>
+                    </div>
+                    <div class="exchange-item">
+                        <span>🏆 炫彩奖杯</span>
+                        <button class="btn exchange-btn" data-cost="20">20颗星星</button>
+                    </div>
+                    <div class="exchange-item">
+                        <span>👑 算法小天才称号</span>
+                        <button class="btn exchange-btn" data-cost="50">50颗星星</button>
+                    </div>
+                </div>
+                <div id="exchangeMessage" class="exchange-message"></div>
+            </div>
+            <button id="backToWelcomeBtn" class="btn secondary-btn">返回首页</button>
+        </div>
+    </div>
+
+    <div id="donateModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img src="pay.png" class="donate-image" alt="家长打赏">
+        </div>
+    </div>
+
+    <div id="gamePage" class="page">
+        <div class="container">
+            <div class="header">
+                <h1 id="welcomeMessage" class="welcome-message">欢迎你，<span id="userName"></span>！<span id="userBadges"></span></h1>
+                <div class="stats">
+                    <span>⭐ 星星: <span id="stars">0</span></span>
+                    <span>🏆 关卡: <span id="level">1</span></span>
+                </div>
+            </div>
+            
+            <div class="game-container">
+                <h2 id="gameTitle">第一关：数字排序</h2>
+                <p id="gameInstruction" class="game-instruction">把下面的数字从小到大排列：</p>
+                <div id="numbersContainer" class="numbers-container"></div>
+                <div id="answerContainer" class="answer-container">
+                    <p>你的答案：</p>
+                    <div id="userAnswer" class="user-answer"></div>
+                </div>
+                <div id="additionInputContainer" class="addition-input-container" style="display: none;">
+                    <input type="number" id="additionAnswer" placeholder="请输入答案">
+                </div>
+                <div class="button-group">
+                    <button id="resetBtn" class="btn secondary-btn">重新开始</button>
+                    <button id="submitBtn" class="btn primary-btn">提交答案</button>
+                </div>
+                <div id="resultMessage" class="result-message"></div>
+            </div>
+            
+            <div class="button-group">
+                <button id="backToLevelSelectBtn" class="btn secondary-btn">返回关卡选择</button>
+                <button id="logoutBtn" class="btn logout-btn">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+    <script src="js/User.js"></script>
+    <script src="js/PageManager.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
